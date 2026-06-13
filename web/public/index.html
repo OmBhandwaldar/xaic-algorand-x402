@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XAIC — x402 AI Insurance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #000;
+    --panel: #0a0a0a;
+    --panel2: #111;
+    --border: #1f1f1f;
+    --border-hover: #333;
+    --text: #ededed;
+    --muted: #a1a1a1;
+    --faint: #6f6f6f;
+    --accent: #0070f3;
+    --green: #3ecf8e;
+    --amber: #f5a623;
+    --error: #ff4d5e;
+    --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 14px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
+
+  /* header */
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+  .mark { width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent;
+    border-bottom: 15px solid #fff; }
+  .badge { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; letter-spacing: .01em; }
+  header p { margin: 14px 0 0; color: var(--muted); font-size: 14.5px; max-width: 540px; }
+
+  /* actor strip */
+  .actors { display: flex; align-items: center; gap: 10px; margin: 32px 0 28px; }
+  .actor { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 12px; text-align: center; }
+  .actor .ico { font-size: 18px; line-height: 1; }
+  .actor .name { font-weight: 560; margin-top: 7px; font-size: 13.5px; }
+  .actor .sub { color: var(--faint); font-size: 11px; font-family: var(--mono); margin-top: 2px; }
+  .arrow { color: var(--faint); font-size: 15px; flex: 0 0 auto; }
+
+  /* controls */
+  .controls { display: flex; gap: 10px; align-items: center; margin: 0 0 16px; flex-wrap: wrap; }
+  #prompt { flex: 1 1 320px; min-width: 220px; height: 40px; background: var(--panel);
+    border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 0 14px;
+    font-size: 14px; font-family: var(--sans); outline: none; transition: border-color .15s, box-shadow .15s; }
+  #prompt::placeholder { color: var(--faint); }
+  #prompt:hover { border-color: var(--border-hover); }
+  #prompt:focus { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
+  button { height: 40px; background: #fff; color: #000; border: 1px solid #fff; border-radius: 8px;
+    padding: 0 18px; font-size: 14px; font-weight: 540; font-family: var(--sans); cursor: pointer;
+    transition: background .15s, opacity .15s, transform .05s; }
+  button:hover:not(:disabled) { background: #e6e6e6; }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { background: #1a1a1a; color: var(--faint); border-color: var(--border); cursor: not-allowed; }
+  .toggle { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 7px; cursor: pointer;
+    user-select: none; }
+  .toggle input { accent-color: #fff; width: 14px; height: 14px; }
+
+  /* summary banner */
+  .summary { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 13px 16px; margin: 0 0 18px; display: none; font-size: 13.5px; color: var(--muted); }
+  .summary.show { display: block; }
+  .summary b { color: var(--text); font-weight: 560; }
+
+  /* step list */
+  #stages { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); overflow: hidden; }
+  .stage { display: flex; gap: 14px; padding: 16px 18px; border-top: 1px solid var(--border);
+    opacity: .42; transition: opacity .25s, background .25s; }
+  .stage:first-child { border-top: 0; }
+  .stage.active, .stage.done, .stage.error { opacity: 1; }
+  .stage.active { background: #0d0d0d; }
+
+  .dot { flex: 0 0 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 15px; border: 1.5px solid #2a2a2a; background: transparent; transition: border-color .25s, background .25s; }
+  .stage.active .dot { border-color: var(--accent); }
+  .stage.done .dot { border-color: var(--green); background: rgba(62,207,142,.1); }
+  .stage.error .dot { border-color: var(--error); background: rgba(255,77,94,.1); }
+
+  .stage .body { flex: 1; min-width: 0; padding-top: 2px; }
+  .stage .label { font-weight: 540; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .stage .detail { color: var(--muted); font-size: 13px; margin-top: 3px; word-break: break-word; }
+  .stage .detail .spin { margin-right: 6px; }
+  .stage .tx { margin-top: 7px; font-size: 12px; font-family: var(--mono); }
+  .stage .tx a { color: var(--accent); text-decoration: none; }
+  .stage .tx a:hover { text-decoration: underline; }
+
+  .spin { width: 13px; height: 13px; border: 1.5px solid #ffffff33; border-top-color: var(--accent);
+    border-radius: 50%; animation: s .7s linear infinite; display: inline-block; vertical-align: -1px; }
+  @keyframes s { to { transform: rotate(360deg); } }
+
+  /* pills */
+  .pill { font-family: var(--mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 5px; border: 1px solid var(--border-hover); color: var(--muted); }
+  .pill.http { color: #79b8ff; border-color: #1d3a5f; }
+  .pill.x402 { color: var(--amber); border-color: #4a3413; }
+  .pill.chain { color: var(--green); border-color: #1d4533; }
+
+  footer { color: var(--faint); font-size: 12px; margin-top: 24px; text-align: center; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="mark"></span> XAIC <span class="badge">x402 · Algorand Testnet</span></div>
+    <p>Insurance for paid AI tool calls — two real x402 payments and an on-chain refund, settled in USDC.</p>
+  </header>
+
+  <div class="actors">
+    <div class="actor"><div class="ico">🧑‍💻</div><div class="name">Consumer</div><div class="sub">agent + wallet</div></div>
+    <div class="arrow">→</div>
+    <div class="actor"><div class="ico">🤖</div><div class="name">Producer</div><div class="sub">POST /tool</div></div>
+    <div class="arrow">⇄</div>
+    <div class="actor"><div class="ico">🏦</div><div class="name">Insurance</div><div class="sub">POST /claim</div></div>
+  </div>
+
+  <div class="controls">
+    <input id="prompt" type="text" placeholder="Ask the AI agent anything…  e.g. What is the capital of France?" />
+    <button id="run">Run demo</button>
+    <!-- <label class="toggle"><input type="checkbox" id="good" /> Force a correct answer</label> -->
+  </div>
+
+  <div class="summary" id="summary"></div>
+  <div id="stages"></div>
+
+  <footer>Real USDC settlement via the GoPlausible facilitator · click any tx to view it on the explorer.</footer>
+</div>
+
+<script>
+const STAGES = [
+  { id:"tool:request", label:"Agent calls Producer", tag:"HTTP",  ico:"🌐" },
+  { id:"tool:pay",     label:"x402 payment → Producer", tag:"x402", ico:"💸" },
+  { id:"tool:result",  label:"AI tool response received", tag:"",   ico:"🤖" },
+  { id:"judge",        label:"Agent judges the response", tag:"",   ico:"🔍" },
+  { id:"claim:request",label:"Agent files insurance claim", tag:"HTTP", ico:"🌐" },
+  { id:"claim:pay",    label:"x402 payment → Insurance", tag:"x402", ico:"💸" },
+  { id:"claim:verify", label:"Insurance verifies the claim", tag:"", ico:"🛡️" },
+  { id:"refund",       label:"Refund issued on-chain", tag:"chain", ico:"💰" },
+];
+
+const stagesEl = document.getElementById("stages");
+const summaryEl = document.getElementById("summary");
+const runBtn = document.getElementById("run");
+const goodEl = document.getElementById("good");
+const promptEl = document.getElementById("prompt");
+
+function tagHtml(tag){
+  if(!tag) return "";
+  const cls = tag==="HTTP"?"http":tag==="x402"?"x402":"chain";
+  return `<span class="pill ${cls}">${tag}</span>`;
+}
+
+function render(){
+  stagesEl.innerHTML = STAGES.map(s => `
+    <div class="stage" id="st-${s.id}">
+      <div class="dot">${s.ico}</div>
+      <div class="body">
+        <div class="label">${s.label}${tagHtml(s.tag)}</div>
+        <div class="detail" id="dt-${s.id}"></div>
+        <div class="tx" id="tx-${s.id}"></div>
+      </div>
+    </div>`).join("");
+}
+render();
+
+function update(e){
+  if(e.stage === "start" || e.stage === "complete"){
+    summaryEl.classList.add("show");
+    summaryEl.innerHTML = (e.stage==="complete"?"<b>"+e.title+"</b> — ":"") + (e.detail||e.title);
+    return;
+  }
+  if(e.stage === "error"){
+    summaryEl.classList.add("show");
+    summaryEl.innerHTML = "<b>"+e.title+"</b>" + (e.detail?(" — "+e.detail):"");
+    return;
+  }
+  const el = document.getElementById("st-"+e.stage);
+  if(!el) return;
+  el.classList.remove("active","done","error");
+  el.classList.add(e.status === "active" ? "active" : e.status === "error" ? "error" : "done");
+  if(e.detail) document.getElementById("dt-"+e.stage).textContent = e.detail;
+  if(e.status === "active"){
+    document.getElementById("dt-"+e.stage).innerHTML =
+      `<span class="spin"></span> ${e.detail||""}`;
+  }
+  if(e.txUrl){
+    document.getElementById("tx-"+e.stage).innerHTML =
+      `<a href="${e.txUrl}" target="_blank" rel="noopener">↗ ${e.txId? e.txId.slice(0,14)+"…" : "view transaction"}</a>`;
+  }
+}
+
+function startRun(){
+  runBtn.disabled = true; if (goodEl) goodEl.disabled = true;
+  summaryEl.classList.remove("show"); summaryEl.innerHTML = "";
+  render();
+  const params = new URLSearchParams();
+  if (goodEl && goodEl.checked) params.set("good", "1");
+  const p = promptEl.value.trim();
+  if (p) params.set("prompt", p);
+  const qs = params.toString();
+  const src = new EventSource("/api/run" + (qs ? "?" + qs : ""));
+  src.onmessage = (m) => { try { update(JSON.parse(m.data)); } catch {} };
+  const done = () => { src.close(); runBtn.disabled = false; if (goodEl) goodEl.disabled = false; };
+  src.addEventListener("end", done);
+  src.onerror = done;
+}
+runBtn.addEventListener("click", startRun);
+promptEl.addEventListener("keydown", (e) => { if (e.key === "Enter" && !runBtn.disabled) startRun(); });
+</script>
+</body>
+</html>
