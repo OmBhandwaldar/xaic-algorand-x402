@@ -31,7 +31,15 @@
     font-family: var(--sans); font-size: 14px; line-height: 1.55;
     -webkit-font-smoothing: antialiased; min-height: 100vh;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 24px 80px; }
+
+  /* top notice banner */
+  .notice { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 32px;
+    background: linear-gradient(90deg, rgba(0,112,243,.10), rgba(62,207,142,.08));
+    border: 1px solid #1d3a5f; border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  .notice .nico { font-size: 15px; line-height: 1.3; }
+  .notice b { color: #fff; font-weight: 600; }
+  .notice span { color: var(--muted); }
 
   /* header */
   .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
@@ -114,8 +122,13 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="notice">
+    <span class="nico">⚡</span>
+    <span><b>In production, XAIC integrates directly with your agents</b> — coverage is applied automatically at the protocol layer, with no UI in the loop. <span>This page is just a demo to visualize the flow.</span></span>
+  </div>
+
   <header>
-    <div class="brand"><span class="mark"></span> XAIC <span class="badge">x402 · Algorand Testnet</span></div>
+    <div class="brand"><span class="mark"></span> XAIC <span class="badge">x402 · Algorand</span></div>
     <p>Insurance for paid AI tool calls — two real x402 payments and an on-chain refund, settled in USDC.</p>
   </header>
 
