@@ -5,7 +5,7 @@ import { runDemo, type StageEvent } from "../consumer/flow.js";
 import { PRODUCER_URL, INSURANCE_URL } from "../shared/config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// Railway (and most hosts) inject PORT for the public service.
+// Railway (& most hosts) inject PORT for the public service.
 const WEB_PORT = Number(process.env.PORT || process.env.WEB_PORT || 4023);
 
 const app = express();
