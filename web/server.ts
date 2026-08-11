@@ -12,7 +12,6 @@ app.use(express.static(join(__dirname, "public")));
 
 let running = false;
 
-// Server-Sent Events: streams every StageEvent of one demo run to the browser.
 app.get("/api/run", async (req, res) => {
   res.set({
     "Content-Type": "text/event-stream",
