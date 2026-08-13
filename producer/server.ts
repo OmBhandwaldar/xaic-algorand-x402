@@ -68,7 +68,7 @@ app.post("/tool", async (req, res) => {
   res.json(body);
 });
 
-// --- internal, non-paid lookup so the Insurance agent can evaluate a claim ---
+// --- internal, non-paid lookup so the Insurance agent can evaluate a claim --
 app.get("/_request/:id", (req, res) => {
   const record = requests.get(req.params.id);
   if (!record) return res.status(404).json({ error: "unknown requestId" });
