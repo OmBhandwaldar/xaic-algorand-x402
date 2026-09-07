@@ -25,7 +25,7 @@ for (const role of roles) {
     avmKey: Buffer.from(sk).toString("base64"),
   };
 }
-//insurance
+//insurance-pro
 const env =
   roles
     .map((r) => {
